@@ -17,6 +17,10 @@ export default function App(){
   //break: updated by setBreak, meaning the user is on break\
   const [ONbreak, setBreak]=useState(false);
 
+  //history: section displaying past session data
+  const [history, setHistory]=useState([]);
+  const [historyLoading, setHistoryLoading]=useState(false);
+
   //loading: api request in progress (disables buttons and shows feedback)
   const [loading, setLoading]=useState(false);
 
@@ -125,7 +129,32 @@ async function endBreak(){
       //stoppin the loading visual 
       setLoading(false);
     }
+    //final state
+    setActive(false);
+    setBreak(false);
+    //refreshing the history since the session has ended
+    await loadHistory();
+
   }
+
+
+  //loading history
+  async function loadHistory(){
+    try{
+      setHistoryLoading(true);
+      setError(null);
+
+      const data = await api(`/api/focus/history/${userId}`, {method: "GET"});
+      setHistory(data ?? []);
+
+
+    }catch(err){
+      setError(err.message);
+    }finally{
+      setHistoryLoading(false);
+    }
+  }
+
 
   //JSX - UI
   return(
@@ -158,6 +187,53 @@ async function endBreak(){
       {!active && <p> No running focus sessions</p>}
 
       {error && <p style={{color: "red"}}>{error}</p>}
+
+      {/*History Section*/}
+      <hr style={{ margin: "20 px 0"}} />
+
+      <div>
+        <h2>Session History</h2>
+
+        <button onclick={loadingHist} disabled={historyLoading}>
+          {historyLoading?"Loading":"Refresh History"}
+        </button>
+        {history.length === 0 ? (
+        <p>No completed sessions yet.</p>
+      ) : (
+        <table
+          border="1"
+          cellPadding="8"
+          style={{ marginTop: 10, borderCollapse: "collapse" }}
+        >
+          <thead>
+            <tr>
+              <th>Session</th>
+              <th>Start</th>
+              <th>End</th>
+              <th>Focus Time</th>
+              <th>Break Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {history.map((h) => (
+              <tr key={h.sessionId}>
+                <td>{h.sessionId}</td>
+                <td>{new Date(h.startTime).toLocaleString()}</td>
+                <td>
+                  {h.endTime
+                    ? new Date(h.endTime).toLocaleString()
+                    : "-"}
+                </td>
+                <td>{h.focusTime}</td>
+                <td>{h.breakTime}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      </div>
     </div>
+
+    
   );
 }
