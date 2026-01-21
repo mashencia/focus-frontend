@@ -162,25 +162,25 @@ async function endBreak(){
       <h1>Focus</h1>
 
       {/*Start Focus Button*/}
-      <button onClick={startFocus} disabledled={loading||active}>
+      <button onClick={startFocus} disabled={loading||active}>
         {loading ? "Starting":"Start Focus"}
       </button>
 
       {/*Start Break Button*/}
       {active && !ONbreak && (
-        <button onClick={startBreak} disabledled={loading}>
+        <button onClick={startBreak} disabled={loading}>
           Start Break
         </button>
       )}
 
       {/*End Break Button*/}
       {active && ONbreak &&(
-        <button onClick={endBreak} disabledled={loading}>
+        <button onClick={endBreak} disabled={loading}>
           End Break
         </button>
       )}
       {/*End Focus Button*/}
-      <button onClick={endFocus} disabledled={loading||!active} style={{marginLeft:10}}>
+      <button onClick={endFocus} disabled={loading||!active} style={{marginLeft:10}}>
         {loading ? "Ending":"End Focus"}
       </button>
       {active && <p> Focus session is running</p>}
@@ -194,7 +194,7 @@ async function endBreak(){
       <div>
         <h2>Session History</h2>
 
-        <button onclick={loadingHist} disabled={historyLoading}>
+        <button onClick={loadingHist} disabled={historyLoading}>
           {historyLoading?"Loading":"Refresh History"}
         </button>
         {history.length === 0 ? (
