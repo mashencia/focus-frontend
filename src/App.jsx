@@ -118,8 +118,9 @@ async function endBreak(){
       const res = await api(`/api/focus/end/${userId}`, {method: "POST"});
       console.log("End focus response:", res); //for debug
 
-      //Marks the sessions as active for the UI (state)
-      setActive(true);
+      ///final state
+      setActive(false);
+      setBreak(false);
 
     }catch(err){
       //backend/fetch errors
@@ -129,9 +130,7 @@ async function endBreak(){
       //stoppin the loading visual 
       setLoading(false);
     }
-    //final state
-    setActive(false);
-    setBreak(false);
+    
     //refreshing the history since the session has ended
     await loadHistory();
 
@@ -189,12 +188,12 @@ async function endBreak(){
       {error && <p style={{color: "red"}}>{error}</p>}
 
       {/*History Section*/}
-      <hr style={{ margin: "20 px 0"}} />
+      <hr style={{ margin: "20px 0"}} />
 
       <div>
         <h2>Session History</h2>
 
-        <button onClick={loadingHist} disabled={historyLoading}>
+        <button onClick={loadHistory} disabled={historyLoading}>
           {historyLoading?"Loading":"Refresh History"}
         </button>
         {history.length === 0 ? (
