@@ -1,7 +1,20 @@
-import {useState} from "react"; //this is how the component stores memory (consistent values between renders)
+import { useState, useEffect } from "react"; //this is how the component stores memory (consistent values between renders)
 import {api} from "./api"; //wraps fetch() and commmunicates with the backend
 
+//helper method for the stopwatch
+function timeFormat(ElapsedSeconds){
+  //Needs to pe displayed {hh:mm:ss}
+  const hour = Math.floor(ElapsedSeconds/3600);
+  const minutes = Math.floor((ElapsedSeconds % 3600)/60);
+  const seconds = Math.floor(ElapsedSeconds%60);
 
+  //adding a pad (0) for the first digit in case needed
+  const pad = (n)=> n.toString().padStart(2, "0");
+
+  //returning the formatted stopwatch
+  return `${pad(hour)}:${pad(minutes)}:${pad(seconds)}`;
+
+}
 //Main React component 
 export default function App(){
   //current design permits only one user
@@ -27,7 +40,8 @@ export default function App(){
   //error: storage of backend/network error messages
   const [error, setError]=useState(null);
 
-
+  //stopwatch: only accounts for the time in focus excluding breaks
+  const [stopwatchSeconds, setStopwatchSeconds] = useState(0);
 
   //user clicks "Start Focus":
   async function startFocus(){
@@ -39,6 +53,8 @@ export default function App(){
       //Previous error messages cleared
       setError(null);
 
+      //resetting the stop watch to 0 (marks the start of a new session)
+      setStopwatchSeconds(0);
 
       //POST  req to the backend
       const res = await api(`/api/focus/start/${userId}`, {method: "POST"});
@@ -91,7 +107,7 @@ async function endBreak(){
 
       //POST req to the backend
       const res = await api(`/api/focus/break/end/${userId}`, {method: "POST",});
-      console.log("Break session commenced");
+      console.log("Break session ended");
 
       //Marks the break session state active
       setBreak(false);
@@ -122,6 +138,10 @@ async function endBreak(){
       setActive(false);
       setBreak(false);
 
+      //History is loaded if API was successful
+      //refreshing the history since the session has ended
+      await loadHistory();
+      
     }catch(err){
       //backend/fetch errors
       //api() helper allows for the err.message
@@ -131,8 +151,6 @@ async function endBreak(){
       setLoading(false);
     }
     
-    //refreshing the history since the session has ended
-    await loadHistory();
 
   }
 
@@ -153,13 +171,34 @@ async function endBreak(){
       setHistoryLoading(false);
     }
   }
+  
+  //Stopwacth: ticking only when focus session is running (not break)
+  useEffect(() => {
+      if(!active||ONbreak){
+        return;
+      }
 
+      const interval = setInterval(()=>{
+        setStopwatchSeconds((s)=> s+1);
+      }, 1000);
+
+      //The interval is stopped once focus session is stopped (active changes)
+      //or when a break session begins (ONbreak changes)
+      return()=> clearInterval(interval);
+  }, [active, ONbreak]);
 
   //JSX - UI
   return(
     <div style={{padding:20, fontFamily:"Arial"}}>
       <h1>Focus</h1>
 
+       {/*Stopwatch*/}
+       {active &&(
+        <p style={{fontFamily: "monospace", fontSize: 18}}>
+          {timeFormat(stopwatchSeconds)}
+          {ONbreak && " (paused on break)"}
+          </p>
+       )}
       {/*Start Focus Button*/}
       <button onClick={startFocus} disabled={loading||active}>
         {loading ? "Starting":"Start Focus"}
@@ -182,20 +221,27 @@ async function endBreak(){
       <button onClick={endFocus} disabled={loading||!active} style={{marginLeft:10}}>
         {loading ? "Ending":"End Focus"}
       </button>
+
+      {/*Session Status*/}
       {active && <p> Focus session is running</p>}
       {!active && <p> No running focus sessions</p>}
 
       {error && <p style={{color: "red"}}>{error}</p>}
 
+
       {/*History Section*/}
       <hr style={{ margin: "20px 0"}} />
 
       <div>
+        {/*Header*/}
         <h2>Session History</h2>
 
+        {/*Button to Refresh the History*/}
         <button onClick={loadHistory} disabled={historyLoading}>
           {historyLoading?"Loading":"Refresh History"}
         </button>
+
+        {/*Display in case the user first time uses the app*/}
         {history.length === 0 ? (
         <p>No completed sessions yet.</p>
       ) : (
@@ -207,10 +253,10 @@ async function endBreak(){
           <thead>
             <tr>
               <th>Session</th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Focus Time</th>
-              <th>Break Time</th>
+              <th>Start Time</th>
+              <th>End Time</th>
+              <th>Focus Duration</th>
+              <th>Break Duration</th>
             </tr>
           </thead>
           <tbody>
