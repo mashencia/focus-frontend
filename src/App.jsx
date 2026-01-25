@@ -233,96 +233,121 @@ async function endBreak(){
 
   //JSX - UI
   return(
-    <div style={{padding:20, fontFamily:"Arial"}}>
-      <h1>Focus</h1>
-
-       {/*Stopwatch*/}
-       {active &&(
-        <p style={{fontFamily: "monospace", fontSize: 18}}>
-          {timeFormat(stopwatchSeconds)}
-          {ONbreak && " (paused on break)"}
-          </p>
-       )}
-      {/*Start Focus Button*/}
-      <button onClick={startFocus} disabled={loading||active}>
-        {loading ? "Starting":"Start Focus"}
-      </button>
-
-      {/*Start Break Button*/}
-      {active && !ONbreak && (
-        <button onClick={startBreak} disabled={loading}>
-          Start Break
-        </button>
-      )}
-
-      {/*End Break Button*/}
-      {active && ONbreak &&(
-        <button onClick={endBreak} disabled={loading}>
-          End Break
-        </button>
-      )}
-      {/*End Focus Button*/}
-      <button onClick={endFocus} disabled={loading||!active} style={{marginLeft:10}}>
-        {loading ? "Ending":"End Focus"}
-      </button>
-
-      {/*Session Status*/}
-      {active && <p> Focus session is running</p>}
-      {!active && <p> No running focus sessions</p>}
-
-      {error && <p style={{color: "red"}}>{error}</p>}
-
-
-      {/*History Section*/}
-      <hr style={{ margin: "20px 0"}} />
-
-      <div>
+    <div className="min-h-screen bg-slate-900 text-slate-200">
+      <div className="mx-auto max-w-3x1 px-4 py-10">
         {/*Header*/}
-        <h2>Session History</h2>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight">Focus</h1>
+          <p className="mt-2 text-slate-400">Track your focus and rest, to reflect and improve.</p>
+        </div>
 
-        {/*Button to Refresh the History*/}
-        <button onClick={loadHistory} disabled={historyLoading}>
-          {historyLoading?"Loading":"Refresh History"}
-        </button>
+        {/*Body*/}
+        <div className="rounder-2xl border-slate-700 bg-slate-900/60 p-6 shadow-lg">
+          {/*Session Status*/}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2">
+            <span
+              className={`inline-flex h-2.5 w-2.5 rounded-full ${
+                active ? "bg-emerald-400" : "bg-slate-500"
+              }`}
+            />
+            <div className="text-sm">
+              {active ? (
+                <span className="text-slate-100">
+                  Session running{" "}
+                  {ONbreak && <span className="text-amber-300">(on break)</span>}
+                </span>
+              ) : (
+                <span className="text-slate-300">No active session</span>
+              )}
+            </div>
+          </div>
+              {/*Stopwatch*/}
+              {active &&(
+              <div className="rounded-xl border border-slate-700 bg-slate-900/40 px-4 py-2 font-mono text-lg">
+              {timeFormat(stopwatchSeconds)}
+              {ONbreak && " (paused on break)"}
+            </div>
+             )}
+        </div>
+        {/*Buttons*/}
+        <div className="mt-6 flex flex-wrap gap-3">
+          {/*Start Focus Button*/}
+          <button onClick={startFocus} disabled={loading||active} className="rounded-xl bg-emerald-500 px-4 py-2 font-medium text-slate-950 shadow hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50">
+            {loading ? "Starting":"Start Focus"}
+          </button>
+
+          {/*Start Break Button*/}
+          {active && !ONbreak && (
+          <button onClick={startBreak} disabled={loading} className="rounded-xl bg-amber-400 px-4 py-2 font-medium text-slate-950 shadow hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50">
+            Start Break
+          </button>
+          )}
+
+          {/*End Break Button*/}
+          {active && ONbreak &&(
+          <button onClick={endBreak} disabled={loading} className="rounded-xl bg-amber-400 px-4 py-2 font-medium text-slate-950 shadow hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50">
+            End Break
+          </button>
+          )}
+
+          {/*End Focus Button*/}
+          <button onClick={endFocus} disabled={loading||!active} className="rounded-xl bg-slate-200 px-4 py-2 font-medium text-slate-950 shadow hover:bg-white disabled:cursor-not-allowed disabled:opacity-50">
+            {loading ? "Ending":"End Focus"}
+          </button>
+
+        </div> {/*Buttons*/}
+        
+        {/*Error Message*/}
+          {error && (
+            <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+              {error}
+            </div>
+          )}
+      </div> {/*Body*/}
+
+      {/*History*/}
+      <div className="mt-6 rounded-2xl border border-slate-800 bg-slate-900/60 p-6 shadow-lg">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-xl font-semibold">Session History</h2>
+          {/*Button to Refresh the History*/}
+          <button onClick={loadHistory} disabled={historyLoading} className="w-fit rounded-xl border border-slate-700 bg-slate-950/40 px-4 py-2 text-sm font-medium text-slate-100 hover:bg-slate-950/70 disabled:cursor-not-allowed disabled:opacity-50">
+            {historyLoading?"Loading":"Refresh History"}
+         </button>
+        </div>
 
         {/*Display in case the user first time uses the app*/}
         {history.length === 0 ? (
-        <p>No completed sessions yet.</p>
+        <p className="mt-4 text-slate-300">No completed sessions yet.</p>
       ) : (
-        <table
-          border="1"
-          cellPadding="8"
-          style={{ marginTop: 10, borderCollapse: "collapse" }}
-        >
+        <div className="mt-4 overflow-x-auto"> 
+          <table className="w-full border-collapse text-sm">
           <thead>
-            <tr>
-              <th>Session</th>
-              <th>Start Time</th>
-              <th>End Time</th>
-              <th>Focus Duration</th>
-              <th>Break Duration</th>
+            <tr className="text-left text-slate-300">
+              <th className="py-2 pr-4">Session</th>
+              <th className="py-2 pr-4">Start Time</th>
+              <th className="py-2 pr-4">End Time</th>
+              <th className="py-2 pr-4">Focus Duration</th>
+              <th className="py-2 pr-4">Break Duration</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-slate-800">
             {history.map((h) => (
-              <tr key={h.sessionId}>
-                <td>{h.sessionId}</td>
-                <td>{new Date(h.startTime).toLocaleString()}</td>
-                <td>
-                  {h.endTime
-                    ? new Date(h.endTime).toLocaleString()
-                    : "-"}
+              <tr key={h.sessionId} className="text-slate-100">
+                <td className="py-3 pr-4 text-slate-200">{h.sessionId}</td>
+                <td className="py-3 pr-4 text-slate-300">{new Date(h.startTime).toLocaleString()}</td>
+                <td className="py-3 pr-4 text-slate-300">
+                  {h.endTime ? new Date(h.endTime).toLocaleString() : "-"}
                 </td>
-                <td>{formatTimeSpan(h.focusTime)}</td>
-                <td>{formatTimeSpan(h.breakTime)}</td>
+                <td className="py-3 pr-4 font-mono">{formatTimeSpan(h.focusTime)}</td>
+                <td className="py-3 pr-0 font-mono">{formatTimeSpan(h.breakTime)}</td>
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
       )}
       </div>
-    </div>
-
-    
-  );
-}
+  </div>
+  </div>
+);}
