@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"; //this is how the component stores memory (consistent values between renders)
 import {api} from "./api"; //wraps fetch() and commmunicates with the backend
 
-//helper method for the stopwatch
+//helper method for the stopwatch time display
 function timeFormat(ElapsedSeconds){
   //Needs to pe displayed {hh:mm:ss}
   const hour = Math.floor(ElapsedSeconds/3600);
@@ -15,6 +15,49 @@ function timeFormat(ElapsedSeconds){
   return `${pad(hour)}:${pad(minutes)}:${pad(seconds)}`;
 
 }
+
+//helper method to the history session time display
+//Solves the problem of C# returning TimeSpan values.toString()
+//meaning that it is displayed with days and decimals after the seconds
+function formatTimeSpan(timeSpan){
+  //in case the session was not terminated (handles null values)
+  if(!timeSpan) return "00:00:00";
+
+  //value -> string
+  const span = timeSpan.toString();
+
+  let days = 0;
+  let timePart = span;
+
+  //getting the days number which is the digit before the first dot
+  const dayMatch = span.match(/^(\d+)\.(\d{2}:\d{2}:\d{2})/);
+
+  if (dayMatch) {
+    //extracts the number of days from the string
+    days = parseInt(dayMatch[1], 10);
+
+    //extracats the timespan after the days
+    timePart = span.substring(span.indexOf(".") + 1);
+  }
+
+  //removes the decimals after the seconds
+  const noDecimalTime = timePart.split(".")[0];
+
+  //formats into {hh:mm:ss}
+  const [hh, mm, ss] = noDecimalTime.split(":").map(Number);
+
+  //calculating teh total number of hours from days + current running hours
+  const totalHours = days*24 + (hh||0);
+
+  //padding for the zeroes 
+  const pad = (n)=> String(n).padStart(2,"0");
+
+  //returning the time span habitual to the user
+  return `${pad(totalHours)}:${pad(mm || 0)}:${pad(ss || 0)}`;
+
+}
+
+
 //Main React component 
 export default function App(){
   //current design permits only one user
@@ -269,8 +312,8 @@ async function endBreak(){
                     ? new Date(h.endTime).toLocaleString()
                     : "-"}
                 </td>
-                <td>{h.focusTime}</td>
-                <td>{h.breakTime}</td>
+                <td>{formatTimeSpan(h.focusTime)}</td>
+                <td>{formatTimeSpan(h.breakTime)}</td>
               </tr>
             ))}
           </tbody>
