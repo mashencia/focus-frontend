@@ -231,31 +231,34 @@ async function endBreak(){
       return()=> clearInterval(interval);
   }, [active, ONbreak]);
 
+
+
+
   //JSX - UI
   return(
-    <div className="min-h-screen bg-slate-900 text-slate-200">
+    <div className="min-h-screen bg-slate-800 text-slate-200">
       <div className="mx-auto max-w-3x1 px-4 py-10">
         {/*Header*/}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">Focus</h1>
+          <h1 className="text-4xl font-bold tracking-tight">Focus</h1>
           <p className="mt-2 text-slate-400">Track your focus and rest, to reflect and improve.</p>
         </div>
 
         {/*Body*/}
-        <div className="rounder-2xl border-slate-700 bg-slate-900/60 p-6 shadow-lg">
+        <div className="rounder-2xl border-slate-600 bg-slate-800/60 p-6 shadow-lg">
           {/*Session Status*/}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <span
               className={`inline-flex h-2.5 w-2.5 rounded-full ${
-                active ? "bg-emerald-400" : "bg-slate-500"
+                active ? "bg-sky-300" : "bg-slate-500"
               }`}
             />
             <div className="text-sm">
               {active ? (
                 <span className="text-slate-100">
                   Session running{" "}
-                  {ONbreak && <span className="text-amber-300">(on break)</span>}
+                  {ONbreak && <span className="text-emerald-400">(on break)</span>}
                 </span>
               ) : (
                 <span className="text-slate-300">No active session</span>
@@ -264,7 +267,7 @@ async function endBreak(){
           </div>
               {/*Stopwatch*/}
               {active &&(
-              <div className="rounded-xl border border-slate-700 bg-slate-900/40 px-4 py-2 font-mono text-lg">
+              <div className="rounded-xl border border-slate-600 bg-slate-800/40 px-4 py-2 font-mono text-lg">
               {timeFormat(stopwatchSeconds)}
               {ONbreak && " (paused on break)"}
             </div>
@@ -273,26 +276,26 @@ async function endBreak(){
         {/*Buttons*/}
         <div className="mt-6 flex flex-wrap gap-3">
           {/*Start Focus Button*/}
-          <button onClick={startFocus} disabled={loading||active} className="rounded-xl bg-emerald-500 px-4 py-2 font-medium text-slate-950 shadow hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50">
+          <button onClick={startFocus} disabled={loading||active} className="rounded-xl bg-sky-300 px-4 py-2 font-medium text-slate-900 shadow hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-50">
             {loading ? "Starting":"Start Focus"}
           </button>
 
           {/*Start Break Button*/}
           {active && !ONbreak && (
-          <button onClick={startBreak} disabled={loading} className="rounded-xl bg-amber-400 px-4 py-2 font-medium text-slate-950 shadow hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50">
+          <button onClick={startBreak} disabled={loading} className="rounded-xl bg-violet-400 px-4 py-2 font-medium text-slate-900 shadow hover:bg-violet-300 disabled:cursor-not-allowed disabled:opacity-50">
             Start Break
           </button>
           )}
 
           {/*End Break Button*/}
           {active && ONbreak &&(
-          <button onClick={endBreak} disabled={loading} className="rounded-xl bg-amber-400 px-4 py-2 font-medium text-slate-950 shadow hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50">
+          <button onClick={endBreak} disabled={loading} className="rounded-xl bg-violet-400 px-4 py-2 font-medium text-slate-900 shadow hover:bg-violet-300 disabled:cursor-not-allowed disabled:opacity-50">
             End Break
           </button>
           )}
 
           {/*End Focus Button*/}
-          <button onClick={endFocus} disabled={loading||!active} className="rounded-xl bg-slate-200 px-4 py-2 font-medium text-slate-950 shadow hover:bg-white disabled:cursor-not-allowed disabled:opacity-50">
+          <button onClick={endFocus} disabled={loading||!active} className="rounded-xl bg-slate-200 px-4 py-2 font-medium text-slate-900 shadow hover:bg-white disabled:cursor-not-allowed disabled:opacity-50">
             {loading ? "Ending":"End Focus"}
           </button>
 
@@ -307,11 +310,11 @@ async function endBreak(){
       </div> {/*Body*/}
 
       {/*History*/}
-      <div className="mt-6 rounded-2xl border border-slate-800 bg-slate-900/60 p-6 shadow-lg">
+      <div className="mt-6 rounded-2xl border border-slate-700 bg-slate-800/60 p-6 shadow-lg">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-xl font-semibold">Session History</h2>
           {/*Button to Refresh the History*/}
-          <button onClick={loadHistory} disabled={historyLoading} className="w-fit rounded-xl border border-slate-700 bg-slate-950/40 px-4 py-2 text-sm font-medium text-slate-100 hover:bg-slate-950/70 disabled:cursor-not-allowed disabled:opacity-50">
+          <button onClick={loadHistory} disabled={historyLoading} className="w-fit rounded-xl border border-slate-700 bg-slate-900/40 px-4 py-2 text-sm font-medium text-slate-100 hover:bg-slate-950/70 disabled:cursor-not-allowed disabled:opacity-50">
             {historyLoading?"Loading":"Refresh History"}
          </button>
         </div>
