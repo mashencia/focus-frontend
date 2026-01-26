@@ -206,6 +206,7 @@ async function endBreak(){
       setError(null);
 
       const data = await api(`/api/focus/history/${userId}`, {method: "GET"});
+      console.log("History data:", data);
       setHistory(data ?? []);
 
 
@@ -237,15 +238,15 @@ async function endBreak(){
   //JSX - UI
   return(
     <div className="min-h-screen bg-slate-800 text-slate-200">
-      <div className="mx-auto max-w-3x1 px-4 py-10">
+      <div className="mx-auto max-w-3xl px-4 py-10">
         {/*Header*/}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold tracking-tight">Focus</h1>
+          <h1 className="text-6xl font-bold tracking-tight">Focus</h1>
           <p className="mt-2 text-slate-400">Track your focus and rest, to reflect and improve.</p>
         </div>
 
         {/*Body*/}
-        <div className="rounder-2xl border-slate-600 bg-slate-800/60 p-6 shadow-lg">
+        <div className="rounded-2xl border border-slate-600 bg-slate-800/60 p-6 shadow-lg">
           {/*Session Status*/}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
