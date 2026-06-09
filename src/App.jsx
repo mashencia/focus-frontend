@@ -47,7 +47,7 @@ function formatTimeSpan(timeSpan){
   //formats into {hh:mm:ss}
   const [hh, mm, ss] = noDecimalTime.split(":").map(Number);
 
-  //calculating teh total number of hours from days + current running hours
+  //calculating the total number of hours from days + current running hours
   const totalHours = days*24 + (hh||0);
 
   //padding for the zeroes 
@@ -227,8 +227,7 @@ async function endBreak(){
         setStopwatchSeconds((s)=> s+1);
       }, 1000);
 
-      //The interval is stopped once focus session is stopped (active changes)
-      //or when a break session begins (ONbreak changes)
+      //Cleanup function to clear the interval when component unmounts or dependencies change
       return()=> clearInterval(interval);
   }, [active, ONbreak]);
 
